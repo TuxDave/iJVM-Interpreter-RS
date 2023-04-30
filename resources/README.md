@@ -22,6 +22,7 @@ Il file presenta:
 ## Executable
 La sezione che comprende il codice eseguibile è composta da istruzioni.
 Ogni istruzione ha l'OPCODE che identifica l'operazione, seguito dai suoi eventuali parametri, fino ad arrivare a 4 bytes nelle WIDE.
+Non è ancora noto come sapere il numero di variabili del main, ma si può ovviare con vettore dinamico che cresce quando serve lasciando dei valori nulli in mezzo nei "buchi".
 Leggendo il file:
 - 4 bytes che indicano il numero di bytes che compongono il codice eseguibile (metodi compresi)
 - di seguito tutto il codice che compone il metodo main
@@ -30,8 +31,29 @@ Leggendo il file:
 È presente in memoria uno spazio che contiene i parametri dei metodi e le variabli locali per ogni metodo (e ogni chiamata di una funzione ne ha uno associato).
 Questo spazio nell'implementazione originale sarebbe nello stack, per comodità verrà effettuato in uno stack a parte per linearità
 
+### Istruzioni
+Ogni istruzione come già detto è identificata dal suo OPCODE e riceve eventuali parametri
+Ogni comando ha come scoope di visibilità anche lo stack della memoria, nello specifico il TOS e può pushare o poppare.
+Ogni comando prende 0, 1 o 2 parametri per la lunghezza massima di OPCODE + PARAMS di 4 bytes
+I parametri possono essere di grandezza -> tipo:
+- 0 bytes: 
+  - NOPARAM: non ci sono parametri da passare, lavora sullo stack
+- 1 byte:
+  - BYTE: un valore segnato/non segnato hardcoded nel codice
+  - VARNUM: un valore non segnato che indica un offset dalla base della lista di variabili locali al metodo
+- 2 bytes:
+  - OFFSET: un valore segnato usato es nei GOTO che indica un valore di istruzioni sa saltare in su o in giù
+  - CONST: un valore non segnato che indica quale costante selezionare dal pool
+- 2 bytes special:
+  - VARNUM_CONST: 2 bytes che vanno interpretati singolarmente come 2 parametri (WIDE non applicabile):
+    - 1°: VARNUM
+    - 2°: BYTE
+
+In generale è possibile usare WIDE, istruzione che allunga i VARNUM a 2 bytes
+
 ### Metodi
-Gli altri metodi, a differenza del <i>main<i>, prima del listato delle istruzioni hanno 4 bytes che indicano:
+Gli altri metodi, a differenza del <i>main</i>, prima del listato delle istruzioni hanno 4 bytes che indicano:
 - i primi 2 il numero di parametri
 - 2 secondi 2 il numero di variabili locali
-  (ovviamente le costanti sono condivise da tutti i metodi (e non modificabili)).
+
+ovviamente le costanti sono condivise da tutti i metodi (e non modificabili).
