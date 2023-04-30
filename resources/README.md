@@ -66,3 +66,9 @@ Gli altri metodi, a differenza del <i>main</i>, prima del listato delle istruzio
 - 2 secondi 2 il numero di variabili locali (ignorable se usiamo il metodi di incremento dinamico del main)
 
 ovviamente le costanti sono condivise da tutti i metodi (e non modificabili).
+
+Quando viene effettuata la chiamata ad un metodo (funzione) tramite virtualinvoke, esso si aspetta un parametro: il nome del metodo;
+in fase di compilazione esso viene convertito nel riferimento ad una costante (quindi sarà l'offset dalla base del constant pool -> 2 bytes) il quale valore indica un offset di n istruzioni dalla prima del codice operativo del main per raggiungere la prima del metodo chiamato.
+A questo punto, i valori che assumono gli eventuali x parametri del metodo erano gli x valori nel tos;
+<b>NB</b>: il primo parametro nella lista dei params del metodo deve sempre essere OBJREF che funge da placeholder del valore che successivamente verrà riempito con il puntatore all'istruzione successiva al parametro del chiamate (nomemetodo + 1).
+Il metodo opera sullo stack, in una porzione che viene (penso) ripulita al termine (ireturn), lasciando soltanto in TOS il valore che viene ritornato.
