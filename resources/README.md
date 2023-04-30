@@ -63,6 +63,6 @@ La lettura del codice operativo, seppur debba essere completa, sarà LAZY, quind
 ### Metodi
 Gli altri metodi, a differenza del <i>main</i>, prima del listato delle istruzioni hanno 4 bytes che indicano:
 - i primi 2 il numero di parametri
-- 2 secondi 2 il numero di variabili locali
+- 2 secondi 2 il numero di variabili locali (ignorable se usiamo il metodi di incremento dinamico del main)
 
 ovviamente le costanti sono condivise da tutti i metodi (e non modificabili).
