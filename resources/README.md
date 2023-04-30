@@ -48,8 +48,17 @@ I parametri possono essere di grandezza -> tipo:
   - VARNUM_CONST: 2 bytes che vanno interpretati singolarmente come 2 parametri (WIDE non applicabile):
     - 1°: VARNUM
     - 2°: BYTE
-
+      
 In generale è possibile usare WIDE, istruzione che allunga i VARNUM a 2 bytes
+
+Le istruzioni vengono eseguite una di seguito all'altra salvo che non si presentino salti.
+I salti permettono di variare l'ordine di esecuzione come si fa con le selezioni ed iterazioni.
+Per questo motivo, prima di iniziare l'esecuzione è necessario storare l'intero codice operativo all'interno di una struttura indexable.
+Si sfrutterà un vero e proprio Program Counter per tenere traccia dell'istruzione da eseguire.
+Preferisco avere una Method Area più simile all'originale (che include OPCODE, p1, p2 ecc) piuttosto di una che includa un oggetto Istr con all'interno i parametri, questo facilità anche i salti che non devono essere ri calcolati
+Per permettere l'esecuzione sequenziale e non sequenziale in caso di salti, ogni istruzione effettuerà autonomamente il corretto incremento al PC (sia per gestire il consumarsi dei parametri, sia per gestire i salti);
+quindi es: iadd incrementa di 1, bipush di 2, iinc di 3, goto +-x di +-x.
+La lettura del codice operativo, seppur debba essere completa, sarà LAZY, quindi verranno caricate in memoria le istruzioni eseguite e quella in esecuzione, se si salta in avanti verrà caricato fino a quella necessasia, per evitare <i>lunghi</i> tempi di caricamento dei programmi
 
 ### Metodi
 Gli altri metodi, a differenza del <i>main</i>, prima del listato delle istruzioni hanno 4 bytes che indicano:
