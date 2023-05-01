@@ -1,11 +1,15 @@
+mod istruction_reader;
+
 use std::fs::File;
 use std::io::Read;
+pub use istruction_reader::IstructionReader;
 
 const MAGIC: [u8; 4] = [0x1D, 0xEA, 0xDF, 0xAD];
 
-struct Parser {
+pub struct Parser {
     exec: File,
-    valid: Option<bool>
+    valid: Option<bool>,
+    constants: Option<Vec<i32>>
 }
 
 impl Parser {
@@ -14,8 +18,9 @@ impl Parser {
         let mut p = Parser{
             exec,
             valid: None,
+            constants: None
         };
-        return if p.is_valid() {
+        return if p.check_valid() {
             p.exec.read(&mut [0; 4]).expect("Errore nella lettura del file al byte 5-8"); //consume i 4 bytes da ignorare
             Ok(p)
         } else {
@@ -26,7 +31,7 @@ impl Parser {
     /**
     controlla che il file sia valido, consuma i primi 8 bytes del file
      */
-    fn is_valid(&mut self) -> bool {
+    fn check_valid(&mut self) -> bool {
         return if self.valid.is_none() {
             let buff = &mut [0; 4];
             let r = self.exec.read(buff);
@@ -40,25 +45,22 @@ impl Parser {
         }
     }
 
-    pub fn get_constants(&mut self) -> Vec<u32> {
-
-        fn arr4_to_i32(arr: [u8; 4]) -> i32 {
-            let mut c: i32 = 0;
-            for i in (0 ..= 3).rev(){
-                c += (arr[3 - i] as i32) << i * 8;
+    fn get_constants(&mut self) -> &Vec<i32> {
+        if self.constants.is_none() {
+            let const_count_buf = &mut [0; 4];
+            self.exec.read(const_count_buf).expect("Errore in lettura al byte 9-12");
+            let const_count = i32::from_be_bytes(*const_count_buf);
+            let mut consts: Vec<i32> = vec![];
+            let mut red_byte = 13;
+            for _ in 0 .. const_count {
+                let buff = &mut [0; 4];
+                self.exec.read(buff).expect(&*format!("Errore in lettura al byte {red_byte}")); //TODO caccia dentro le costanti e capisci che tipo fare tutto
+                red_byte += 4;
+                consts.push(i32::from_be_bytes(*buff));
             }
-            return c;
+            self.constants = Some(consts);
+            self.exec.read(&mut [0;4]).expect(&*format!("Errore in lettura al byte {red_byte}")); //eat the 4 useless zeros
         }
-
-        let const_count_buf = &mut [0; 4];
-        self.exec.read(const_count_buf).expect("Errore in lettura al byte 9-12");
-        let const_count = arr4_to_i32(*const_count_buf);
-        let mut consts: Vec<i32> = vec![];
-        for i in 0 .. const_count {
-            let buff = &mut [0; 4];
-            self.exec.read(buff).expect(""); //TODO caccia dentro le costanti e capisci che tipo fare tutto
-            consts.push(arr4_to_i32(*buff));
-        }
-        return ();
+        return self.constants.as_ref().unwrap()
     }
 }
