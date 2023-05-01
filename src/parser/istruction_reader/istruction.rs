@@ -23,7 +23,8 @@ pub enum Istruction {
     #[allow(non_camel_case_types)]
     Wide_ILoad(u16),
     #[allow(non_camel_case_types)]
-    Wide_IStore(u16)
+    Wide_IStore(u16),
+    Halt
 }
 
 // pub struct ParamType {
