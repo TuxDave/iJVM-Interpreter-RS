@@ -62,13 +62,16 @@ impl IJVM {
                         return;
                     }
                 }
-
+                if let Some(v) = p1 {
+                    p0.push(v);
+                }
                 //abbiamo i parametri easy e TECNICAMENTE il pc punta al prossimo opcode
                 if opcode == Istruction::WIDE {
-                    self.ir = Some(Istruction::from_wide_opcode(little));
+                    self.ir = Some(Istruction::from_wide_opcode(little, &p0));
                 } else {
-                    self.ir = Some(Istruction::from_opcode(opcode));
+                    self.ir = Some(Istruction::from_opcode(opcode, &p0));
                 }
+                //TODO: TEST THIS (don't know how but try)
             } else {
                 //TODO: trigger error listener
                 eprintln!("Error in fetching, opcode ({opcode}) non existing");

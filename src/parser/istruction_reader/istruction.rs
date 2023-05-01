@@ -1,6 +1,6 @@
 use std::env::args;
 use std::time::Instant;
-use crate::parser::Istruction::{Bipush, Dup, Goto, IAdd, IAnd, IfEq, IfICmpEq, IfLt, IInc, ILoad, InvokeVirtual, IOr, IReturn, IStore, ISub, Ldc_W, Nop, Pop, Wide_IInc, Wide_ILoad, Wide_IStore};
+use crate::parser::Istruction::{*};
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum Istruction {
