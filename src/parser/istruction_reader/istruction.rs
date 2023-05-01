@@ -122,7 +122,7 @@ impl ParamType {
             Istruction::GOTO | Istruction::IFEQ | Istruction::IFLT | Istruction::IF_ICMPEQ => (ParamType::OFFSET, None),
             Istruction::ILOAD | Istruction::ISTORE => (if !wide { ParamType::VARNUM } else { ParamType::WIDE_VARNUM }, None),
             Istruction::LDC_W => (ParamType::INDEX, None),
-            Istruction::IINC => (ParamType::WIDE_VARNUM, Some(ParamType::CONST)),
+            Istruction::IINC => (if !wide { ParamType::VARNUM } else { ParamType::WIDE_VARNUM }, Some(ParamType::CONST)),
             Istruction::INVOKEVIRTUAL => (ParamType::DISP, None),
             _ => (ParamType::NOPARAM, None)
         }
