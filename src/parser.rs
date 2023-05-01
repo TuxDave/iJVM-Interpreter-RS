@@ -56,7 +56,7 @@ impl Parser {
             let mut red_byte = 13;
             for _ in 0..const_count {
                 let buff = &mut [0; 4];
-                self.exec.read(buff).expect(&*format!("Errore in lettura al byte {red_byte}")); //TODO caccia dentro le costanti e capisci che tipo fare tutto
+                self.exec.read(buff).expect(&*format!("Errore in lettura al byte {red_byte}"));
                 red_byte += 4;
                 consts.push(i32::from_be_bytes(*buff));
             }
