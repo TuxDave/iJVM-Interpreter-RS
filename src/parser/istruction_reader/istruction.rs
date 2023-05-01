@@ -1,3 +1,4 @@
+#[derive(PartialEq, Copy, Clone)]
 pub enum Istruction {
     Bipush(i8),
     Dup,

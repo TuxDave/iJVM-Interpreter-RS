@@ -3,7 +3,7 @@ mod istruction_reader;
 use std::fs::File;
 use std::io::Read;
 pub use istruction_reader::IstructionReader;
-pub use istruction_reader::Istruction;
+pub use istruction_reader::istruction::Istruction;
 
 const MAGIC: [u8; 4] = [0x1D, 0xEA, 0xDF, 0xAD];
 
@@ -46,22 +46,26 @@ impl Parser {
         }
     }
 
-    fn get_constants(&mut self) -> &Vec<i32> {
+    fn pick_constants(&mut self) {
         if self.constants.is_none() {
             let const_count_buf = &mut [0; 4];
             self.exec.read(const_count_buf).expect("Errore in lettura al byte 9-12");
             let const_count = i32::from_be_bytes(*const_count_buf);
             let mut consts: Vec<i32> = vec![];
             let mut red_byte = 13;
-            for _ in 0 .. const_count {
+            for _ in 0..const_count {
                 let buff = &mut [0; 4];
                 self.exec.read(buff).expect(&*format!("Errore in lettura al byte {red_byte}")); //TODO caccia dentro le costanti e capisci che tipo fare tutto
                 red_byte += 4;
                 consts.push(i32::from_be_bytes(*buff));
             }
             self.constants = Some(consts);
-            self.exec.read(&mut [0;4]).expect(&*format!("Errore in lettura al byte {red_byte}")); //eat the 4 useless zeros
+            self.exec.read(&mut [0; 4]).expect(&*format!("Errore in lettura al byte {red_byte}")); //eat the 4 useless zeros
         }
-        return self.constants.as_ref().unwrap()
+    }
+
+    pub fn parse(mut self) -> (Vec<i32>, IstructionReader) {
+        self.pick_constants();
+        return (self.constants.unwrap(), IstructionReader::new(self.exec))
     }
 }

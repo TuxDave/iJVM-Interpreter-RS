@@ -18,7 +18,11 @@ impl IstructionReader {
         };
     }
 
-    fn read_u8(&mut self) -> Option<u8> {
+    pub fn len(&self) -> usize {
+        return self.bytes as usize
+    }
+    
+    pub fn read_u8(&mut self) -> Option<u8> {
         if self.read == self.bytes {
             return None
         }
