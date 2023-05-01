@@ -1,6 +1,5 @@
 use std::fs::File;
 use std::io::Read;
-use std::ptr::read;
 
 pub struct IstructionReader {
     exec: File,
@@ -19,7 +18,7 @@ impl IstructionReader {
         };
     }
 
-    fn read_ubyte(&mut self) -> Option<u8> {
+    fn read_u8(&mut self) -> Option<u8> {
         if self.read == self.bytes {
             return None
         }
@@ -29,12 +28,33 @@ impl IstructionReader {
         return Some(ret[0]);
     }
 
-    fn read_ibyte(&mut self) -> Option<i8> {
-        let ret = self.read_ubyte();
+    fn read_i8(&mut self) -> Option<i8> {
+        let ret = self.read_u8();
         return if ret.is_none() {
             None
         } else {
             Some(ret.unwrap() as i8)
         }
     }
+
+    fn read_u16(&mut self) -> Option<u16> {
+        let big = self.read_u8();
+        let little = self.read_u8();
+        return if big.is_some() && little.is_some() {
+            Some(u16::from_be_bytes([big.unwrap(), little.unwrap()]))
+        } else {
+            None
+        }
+    }
+
+    fn read_i16(&mut self) -> Option<i16> {
+        let ret = self.read_u16();
+        return if ret.is_none() {
+            None
+        } else {
+            Some(ret.unwrap() as i16)
+        }
+    }
 }
+
+pub mod istruction;
