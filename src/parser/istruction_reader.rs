@@ -61,4 +61,6 @@ impl IstructionReader {
     }
 }
 
-pub mod istruction;
+mod istruction;
+pub use istruction::ParamType;
+pub use istruction::Istruction;

@@ -3,7 +3,8 @@ mod istruction_reader;
 use std::fs::File;
 use std::io::Read;
 pub use istruction_reader::IstructionReader;
-pub use istruction_reader::istruction::Istruction;
+pub use istruction_reader::Istruction;
+pub use istruction_reader::ParamType;
 
 const MAGIC: [u8; 4] = [0x1D, 0xEA, 0xDF, 0xAD];
 
