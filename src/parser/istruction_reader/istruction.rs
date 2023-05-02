@@ -52,11 +52,12 @@ impl Istruction {
     pub const POP: u8 = 0x57;
     pub const SWAP: u8 = 0x5F;
     pub const WIDE: u8 = 0xC4;
-    pub const OPCODES: [u8; 20] = [Istruction::BIPUSH, Istruction::DUP, Istruction::GOTO, Istruction::IADD,
+    pub const HALT: u8 = 0xFF;
+    pub const OPCODES: [u8; 21] = [Istruction::BIPUSH, Istruction::DUP, Istruction::GOTO, Istruction::IADD,
         Istruction::IAND, Istruction::IFEQ, Istruction::IFLT, Istruction::IF_ICMPEQ, Istruction::IINC,
         Istruction::ILOAD, Istruction::INVOKEVIRTUAL, Istruction::IOR, Istruction::IRETURN,
         Istruction::ISTORE, Istruction::ISUB, Istruction::LDC_W, Istruction::NOP, Istruction::POP,
-        Istruction::SWAP, Istruction::WIDE];
+        Istruction::SWAP, Istruction::WIDE, Istruction::HALT];
 
     pub fn from_opcode(opcode: u8, params: &[u8]) -> Istruction {
         return match opcode {
