@@ -28,8 +28,9 @@ pub enum Istruction {
     Wide_ILoad(u16),
     #[allow(non_camel_case_types)]
     Wide_IStore(u16),
-    Halt
+    Halt,
 }
+
 impl Istruction {
     pub const BIPUSH: u8 = 0x10;
     pub const DUP: u8 = 0x59;
@@ -78,7 +79,7 @@ impl Istruction {
             Istruction::NOP => Nop,
             Istruction::POP => Pop,
             _ => Nop
-        }
+        };
     }
 
     pub fn from_wide_opcode(little_opcode: u8, params: &[u8]) -> Istruction {
@@ -87,31 +88,32 @@ impl Istruction {
             Istruction::ILOAD => Wide_ILoad(u16::from_be_bytes([params[0], params[1]])),
             Istruction::ISTORE => Wide_IStore(u16::from_be_bytes([params[0], params[1]])),
             _ => Nop
-        }
+        };
     }
 }
 
 #[derive(PartialEq)]
 pub struct ParamType {
     pub bytes_num: u8,
-    pub signed: bool
+    pub signed: bool,
 }
+
 impl ParamType {
-    const UBYTE: Self = ParamType {bytes_num: 1, signed: false};
-    const IBYTE: Self = ParamType {bytes_num: 1, signed: true};
-    const OFFSET: Self = ParamType {bytes_num: 2, signed: true};
+    const UBYTE: Self = ParamType { bytes_num: 1, signed: false };
+    const IBYTE: Self = ParamType { bytes_num: 1, signed: true };
+    const OFFSET: Self = ParamType { bytes_num: 2, signed: true };
     const CONST: Self = ParamType::IBYTE;
     const VARNUM: Self = ParamType::UBYTE;
-    const INDEX: Self = ParamType {bytes_num: 2, signed: false};
+    const INDEX: Self = ParamType { bytes_num: 2, signed: false };
     const DISP: Self = ParamType::INDEX;
     const WIDE_VARNUM: Self = ParamType::INDEX;
-    const NOPARAM: Self = ParamType {bytes_num: 0, signed: false};
+    const NOPARAM: Self = ParamType { bytes_num: 0, signed: false };
 
     /**
     opcode: 16 bit big endian value with the opcode in the first 8, if wide, the opcode in the second 8
      */
     pub fn from_opcode_wide(opcode: u16) -> (ParamType, Option<ParamType>) {
-        let arr:[u8; 2] = opcode.to_be_bytes();
+        let arr: [u8; 2] = opcode.to_be_bytes();
         let wide = arr[0] == Istruction::WIDE;
         let opcode = arr[1];
 
@@ -123,7 +125,7 @@ impl ParamType {
             Istruction::IINC => (if !wide { ParamType::VARNUM } else { ParamType::WIDE_VARNUM }, Some(ParamType::CONST)),
             Istruction::INVOKEVIRTUAL => (ParamType::DISP, None),
             _ => (ParamType::NOPARAM, None)
-        }
+        };
     }
 
     pub fn from_opcode(opcode: u8) -> (ParamType, Option<ParamType>) {

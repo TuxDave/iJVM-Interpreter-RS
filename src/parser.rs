@@ -12,23 +12,22 @@ const MAGIC: [u8; 4] = [0x1D, 0xEA, 0xDF, 0xAD];
 pub struct Parser {
     exec: File,
     valid: Option<bool>,
-    constants: Option<Vec<i32>>
+    constants: Option<Vec<i32>>,
 }
 
 impl Parser {
-
     pub fn new(exec: File) -> Result<Parser, &'static str> {
-        let mut p = Parser{
+        let mut p = Parser {
             exec,
             valid: None,
-            constants: None
+            constants: None,
         };
         return if p.check_valid() {
             p.exec.read(&mut [0; 4]).expect("Errore nella lettura del file al byte 5-8"); //consume i 4 bytes da ignorare
             Ok(p)
         } else {
             Err("File non nel formato eseguibile iJVM.")
-        }
+        };
     }
 
     /**
@@ -45,7 +44,7 @@ impl Parser {
             self.valid.unwrap()
         } else {
             self.valid.unwrap()
-        }
+        };
     }
 
     fn pick_constants(&mut self) {
@@ -68,6 +67,6 @@ impl Parser {
 
     pub fn parse(mut self) -> (Vec<i32>, IstructionReader) {
         self.pick_constants();
-        return (self.constants.unwrap(), IstructionReader::new(self.exec))
+        return (self.constants.unwrap(), IstructionReader::new(self.exec));
     }
 }

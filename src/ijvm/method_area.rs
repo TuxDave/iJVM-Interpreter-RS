@@ -1,18 +1,19 @@
-use crate::parser::{IstructionReader};
+use crate::ijvm::IJVM;
+use crate::parser::IstructionReader;
 
 pub struct MethodArea {
     pub istructions: Vec<u8>,
-    pub(crate) reader: IstructionReader
+    pub(crate) reader: IstructionReader,
 }
 
 impl MethodArea {
     pub fn new(reader: IstructionReader) -> MethodArea {
         return MethodArea {
             istructions: vec![],
-            reader
-        }
+            reader,
+        };
     }
-    
+
     pub fn fetch_absolute(&mut self, pc: usize) -> Result<u8, String> {
         return if pc <= self.reader.len() {
             let istr = self.istructions.get(pc);
@@ -22,7 +23,7 @@ impl MethodArea {
                 let to_read = pc - self.istructions.len();
                 if to_read == 0 {
                     return Err(format!("L'istruzione richiesta ({pc}) è out of bound ({})... \
-                            (file compilato termimato)", self.reader.len()))
+                            (file compilato termimato)", self.reader.len()));
                 }
                 for _ in 0..to_read {
                     let istr = self.reader.read_u8();
@@ -30,21 +31,21 @@ impl MethodArea {
                         self.istructions.push(istr);
                     } else {
                         return Err(format!("L'istruzione richiesta ({pc}) è out of bound ({})... \
-                            (file compilato non corretto)", self.reader.len()))
+                            (file compilato non corretto)", self.reader.len()));
                     }
                 }
                 self.fetch_absolute(pc)
             }
         } else {
             Err(format!("L'istruzione richiesta ({pc}) è out of bound ({})...", self.reader.len()))
-        }
+        };
     }
 
     pub fn fetch_by_offset(&mut self, current: usize, offset: i16) -> Result<u8, String> {
         let pc = current as isize + offset as isize;
         if pc < 0 {
             return Err(format!("L'istruzione richiesta ({pc}) è out of bound ({})... \
-                            (file compilato non corretto)", self.reader.len()))
+                            (file compilato non corretto)", self.reader.len()));
         }
         return self.fetch_absolute(pc as usize);
     }

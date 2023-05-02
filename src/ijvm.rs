@@ -3,22 +3,31 @@ pub use method_area::MethodArea;
 use crate::parser::{Istruction, ParamType};
 
 mod method_area;
+mod execute_istr;
 
 #[allow(non_camel_case_types)]
-pub struct IJVM {
-    pc: usize, // program counter
-    ir: Option<Istruction>, // istruction "register"
+pub struct IJVM<'a> {
+    pc: usize,
+    // program counter
+    ir: Option<Istruction>,
+    // istruction "register"
     method_area: MethodArea,
-    constant_pool: Vec<i32>,
+    constant_pool: &'a [i32],
+    local_variables: Vec<Vec<i32>>,
+    stack: Vec<Vec<i32>>,
+    error: bool
 }
-impl IJVM {
 
-    pub fn new(method_area: MethodArea, constant_pool: Vec<i32>) -> IJVM {
+impl<'a> IJVM<'a> {
+    pub fn new(method_area: MethodArea, constant_pool: &[i32]) -> IJVM {
         return IJVM {
             pc: 0,
             ir: None,
             method_area,
-            constant_pool
+            constant_pool,
+            local_variables: vec![vec![]],
+            stack: vec![vec![]],
+            error: false
         };
     }
 
@@ -29,9 +38,9 @@ impl IJVM {
                 this.pc += 1;
                 *put = byte;
                 Ok(())
-            } else  {
+            } else {
                 Err(fetched.err().unwrap())
-            }
+            };
         }
 
         let mut opcode: u8 = 0;
@@ -62,7 +71,7 @@ impl IJVM {
                 //fetching parameters
                 let mut p0 = vec![];
                 let mut p1 = None;
-                for _ in 0 .. params.0.bytes_num {
+                for _ in 0..params.0.bytes_num {
                     let mut temp = 0;
                     if let Err(msg) = sub_fetch(self, &mut temp) {
                         //TODO: trigger error listener
@@ -94,11 +103,7 @@ impl IJVM {
                 return;
             }
         }
-    }
-
-    fn execute(&mut self) {
-
-    }
+    } 
 }
 
 #[cfg(test)]
@@ -111,15 +116,15 @@ mod t_private_ijvm {
 
     #[test]
     #[should_panic]
-    fn t_fetch () {
+    fn t_fetch() {
         let f = File::create("target/test.txt").expect("Impossibile creare il file");
-        let mut fake_method_area = MethodArea{
+        let mut fake_method_area = MethodArea {
             istructions: vec![],
-            reader: IstructionReader{
+            reader: IstructionReader {
                 exec: f,
                 bytes: 6,
-                read: 0
-            }
+                read: 0,
+            },
         };
         fake_method_area.istructions.push(Istruction::ILOAD);
         fake_method_area.istructions.push(0x10);
@@ -127,7 +132,8 @@ mod t_private_ijvm {
         fake_method_area.istructions.push(Istruction::ILOAD);
         fake_method_area.istructions.push(0x1);
         fake_method_area.istructions.push(0x1);
-        let mut ijvm = IJVM::new(fake_method_area, vec![]);
+        let cp = vec![];
+        let mut ijvm = IJVM::new(fake_method_area, &cp);
         ijvm.fetch_decode();
         println!("{:?}", ijvm.ir.unwrap());
         ijvm.fetch_decode();

@@ -7,27 +7,28 @@ pub use istruction::ParamType;
 pub struct IstructionReader {
     pub(crate) exec: File,
     pub(crate) bytes: u32,
-    pub(crate) read: u32
+    pub(crate) read: u32,
 }
+
 impl IstructionReader {
     pub fn new(mut exec: File) -> IstructionReader {
         let bytes = &mut [0; 4];
         exec.read(bytes); //.expect("Errore in lettura (lunghezza codice eseguibile)");
         let bytes = u32::from_be_bytes(*bytes);
-        return IstructionReader{
+        return IstructionReader {
             exec,
             bytes,
-            read: 0
+            read: 0,
         };
     }
 
     pub fn len(&self) -> usize {
-        return self.bytes as usize
+        return self.bytes as usize;
     }
-    
+
     pub fn read_u8(&mut self) -> Option<u8> {
         if self.read == self.bytes {
-            return None
+            return None;
         }
         let ret = &mut [0];
         self.exec.read(ret).expect("Errore in lettura");
@@ -41,7 +42,7 @@ impl IstructionReader {
             None
         } else {
             Some(ret.unwrap() as i8)
-        }
+        };
     }
 
     fn read_u16(&mut self) -> Option<u16> {
@@ -51,7 +52,7 @@ impl IstructionReader {
             Some(u16::from_be_bytes([big.unwrap(), little.unwrap()]))
         } else {
             None
-        }
+        };
     }
 
     fn read_i16(&mut self) -> Option<i16> {
@@ -60,7 +61,7 @@ impl IstructionReader {
             None
         } else {
             Some(ret.unwrap() as i16)
-        }
+        };
     }
 }
 
