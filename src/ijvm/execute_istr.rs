@@ -1,3 +1,4 @@
+use std::arch::x86_64::_mm_loadl_epi64;
 use std::env::var;
 use crate::ijvm::IJVM;
 use crate::parser::Istruction;
@@ -142,6 +143,7 @@ impl<'a> IJVM<'a> {
                 self.get_last_stack().push(val);
             }
             Istruction::InvokeVirtual(disp) => {
+                let caller_pc = self.pc; //save the caller's next istr pc
                 //aggiunge un layer di variabili, di stack e salta al valore della costante che punta
                 //partendo dalla prima istruzione
                 if disp as usize >= self.constant_pool.len() {
@@ -151,7 +153,7 @@ impl<'a> IJVM<'a> {
                     if jump as u32 + 2 >= self.method_area.reader.bytes {
                         error("INVOKEVIRTUAL: point to an out of bound istr");
                     } else {
-                        self.pc = jump as usize; //TODO: pensa a 0 ecc
+                        self.pc = jump as usize;
                     }
                 }
 
@@ -163,7 +165,7 @@ impl<'a> IJVM<'a> {
                     error("INVOKEVIRTUAL: Not enougth param on stack")
                 } else {
                     self.pc += 4; // vado alla prima istruzione del metodo
-                    let mut params = vec![0]; //ignoreble OBJREF
+                    let mut params = vec![caller_pc as i32]; //OBJREF (pc chiamante, gia pronto alla next op)
                     {
                         let mut to_rev = vec![];
                         for _ in 1 .. params_count {
@@ -176,6 +178,30 @@ impl<'a> IJVM<'a> {
 
                     self.stack.push(vec![]);
                     self.local_variables.push(params);
+                }
+            }
+            Istruction::IOr => {
+                let last = self.get_last_stack();
+                if last.len() >= 2 {
+                    let res = last.pop().unwrap() | last.pop().unwrap();
+                    last.push(res);
+                } else {
+                    error("IRO: Too less values in stack");
+                }
+            }
+            Istruction::IReturn => {
+                if self.stack.len() >= 2 {
+                    let ret = self.get_last_stack().pop();
+                    if let Some(value) = ret {
+                        self.stack.pop();
+                        self.pc = self.local_variables.pop().unwrap()[0] as usize; //torno al chiamante (next istr)
+                        self.get_last_stack().push(value);
+
+                    } else {
+                        error("IRETURN: Need 1 value to be returned.")
+                    }
+                } else {
+                    error("IRETURN: Can only be called in a method.")
                 }
             }
             _ => {}
