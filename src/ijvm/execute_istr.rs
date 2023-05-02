@@ -1,3 +1,4 @@
+use std::env::var;
 use crate::ijvm::IJVM;
 use crate::parser::Istruction;
 
@@ -11,13 +12,47 @@ impl<'a> IJVM<'a> {
         }
     }
 
+    fn wide_get_var_value(&mut self, varnum: u16) -> i32 {
+        let last = self.local_variables.last_mut().unwrap();
+        let value = last.get(varnum as usize);
+        if let Some(value) = value {
+            return *value;
+        } else {
+            while last.len() != varnum as usize {
+                last.push(0);
+            }
+            return self.wide_get_var_value(varnum);
+        }
+    }
+
+    fn get_var_value(&mut self, varnum: u8) -> i32 {
+        return self.wide_get_var_value(varnum as u16);
+    }
+
+    fn wide_store_var_value(&mut self, varnum: u16, new_value: i32) {
+        let last = self.local_variables.last_mut().unwrap();
+        let value = last.get_mut(varnum as usize);
+        if let Some(value) = value {
+            *value = new_value;
+        } else {
+            while last.len() != varnum as usize {
+                last.push(0);
+            }
+            self.wide_store_var_value(varnum, new_value);
+        }
+    }
+
+    fn store_var_value(&mut self, varnum: u8, new_value: i32) {
+        self.wide_store_var_value(varnum as u16, new_value);
+    }
+
     #[inline]
     fn jump(&mut self, offset: i16) {
         self.pc -= 3;
         if offset >= 0 {
             self.pc += offset as usize;
         } else {
-            self.pc -= -offset as usize
+            self.pc -= (-offset) as usize
         }
     }
 
@@ -97,7 +132,52 @@ impl<'a> IJVM<'a> {
                     error("IF_ICMPEQ: Too less values in stack");
                 }
             }
-            //TODO: DO IINC
+            Istruction::IInc(varnum, value) => {
+                let mut val = self.get_var_value(varnum);
+                val += value as i32;
+                self.store_var_value(varnum, val);
+            }
+            Istruction::ILoad(varnum) => {
+                let val = self.get_var_value(varnum);
+                self.get_last_stack().push(val);
+            }
+            Istruction::InvokeVirtual(disp) => {
+                //aggiunge un layer di variabili, di stack e salta al valore della costante che punta
+                //partendo dalla prima istruzione
+                if disp as usize >= self.constant_pool.len() {
+                    error("INVOKEVIRTUAL: disp out of bound");
+                } else {
+                    let jump = self.constant_pool[disp as usize];
+                    if jump as u32 + 2 >= self.method_area.reader.bytes {
+                        error("INVOKEVIRTUAL: point to an out of bound istr");
+                    } else {
+                        self.pc = jump as usize; //TODO: pensa a 0 ecc
+                    }
+                }
+
+                let params_count = u16::from_be_bytes([
+                    self.method_area.fetch_absolute(self.pc).unwrap(),
+                    self.method_area.fetch_absolute(self.pc+1).unwrap()]
+                );
+                if params_count as usize > self.get_last_stack().len() {
+                    error("INVOKEVIRTUAL: Not enougth param on stack")
+                } else {
+                    self.pc += 4; // vado alla prima istruzione del metodo
+                    let mut params = vec![0]; //ignoreble OBJREF
+                    {
+                        let mut to_rev = vec![];
+                        for _ in 1 .. params_count {
+                            //questo unwrap è "safe" perchè abbiamo già controllato che ci siano abbastanza parametri da POPare
+                            to_rev.push(self.get_last_stack().pop().unwrap())
+                        }
+                        to_rev.reverse();
+                        params.append(&mut to_rev);
+                    }
+
+                    self.stack.push(vec![]);
+                    self.local_variables.push(params);
+                }
+            }
             _ => {}
         }
         self.error = is_error;
