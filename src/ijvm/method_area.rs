@@ -1,8 +1,8 @@
-use crate::parser::{Istruction, IstructionReader};
+use crate::parser::{IstructionReader};
 
 pub struct MethodArea {
-    istructions: Vec<u8>,
-    reader: IstructionReader
+    pub istructions: Vec<u8>,
+    pub(crate) reader: IstructionReader
 }
 
 impl MethodArea {
@@ -20,6 +20,10 @@ impl MethodArea {
                 Ok(*istr)
             } else {
                 let to_read = pc - self.istructions.len();
+                if to_read == 0 {
+                    return Err(format!("L'istruzione richiesta ({pc}) è out of bound ({})... \
+                            (file compilato termimato)", self.reader.len()))
+                }
                 for _ in 0..to_read {
                     let istr = self.reader.read_u8();
                     if let Some(istr) = istr {

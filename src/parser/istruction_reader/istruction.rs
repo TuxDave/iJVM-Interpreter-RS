@@ -1,8 +1,6 @@
-use std::env::args;
-use std::time::Instant;
 use crate::parser::Istruction::{*};
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(PartialEq, Copy, Clone, Debug)]
 pub enum Istruction {
     Bipush(i8),
     Dup,

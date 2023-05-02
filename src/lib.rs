@@ -1,2 +1,2 @@
 mod parser;
-mod ijvm;
+pub mod ijvm;

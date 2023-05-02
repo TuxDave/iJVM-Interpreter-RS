@@ -1,15 +1,18 @@
 use std::fs::File;
 use std::io::Read;
 
+pub use istruction::Istruction;
+pub use istruction::ParamType;
+
 pub struct IstructionReader {
-    exec: File,
-    bytes: u32,
-    read: u32
+    pub(crate) exec: File,
+    pub(crate) bytes: u32,
+    pub(crate) read: u32
 }
 impl IstructionReader {
     pub fn new(mut exec: File) -> IstructionReader {
         let bytes = &mut [0; 4];
-        exec.read(bytes).expect("Errore in lettura (lunghezza codice eseguibile)");
+        exec.read(bytes); //.expect("Errore in lettura (lunghezza codice eseguibile)");
         let bytes = u32::from_be_bytes(*bytes);
         return IstructionReader{
             exec,
@@ -62,5 +65,3 @@ impl IstructionReader {
 }
 
 mod istruction;
-pub use istruction::ParamType;
-pub use istruction::Istruction;
