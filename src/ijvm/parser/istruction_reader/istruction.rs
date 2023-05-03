@@ -1,4 +1,4 @@
-use crate::parser::Istruction::{*};
+use crate::ijvm::parser::Istruction::{*};
 
 #[derive(PartialEq, Copy, Clone, Debug)]
 pub enum Istruction {

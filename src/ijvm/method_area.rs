@@ -1,4 +1,4 @@
-use crate::parser::IstructionReader;
+use crate::ijvm::parser::IstructionReader;
 
 pub struct MethodArea {
     pub istructions: Vec<u8>,

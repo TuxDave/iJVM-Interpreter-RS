@@ -1,34 +1,54 @@
-pub use method_area::MethodArea;
-
-use crate::parser::{Istruction, ParamType};
+use std::fs::File;
+use std::rc::Rc;
+use method_area::MethodArea;
+use parser::{Istruction, ParamType};
+use crate::ijvm::parser::Parser;
 
 mod method_area;
 mod execute_istr;
+mod parser;
 
 #[allow(non_camel_case_types)]
-pub struct IJVM<'a> {
+pub struct IJVM {
     pc: usize,
     // program counter
     ir: Option<Istruction>,
     // istruction "register"
     method_area: MethodArea,
-    constant_pool: &'a [i32],
+    constant_pool: Rc<Vec<i32>>,
     local_variables: Vec<Vec<i32>>,
     stack: Vec<Vec<i32>>,
     error: bool
 }
 
-impl<'a> IJVM<'a> {
-    pub fn new(method_area: MethodArea, constant_pool: &[i32]) -> IJVM {
-        return IJVM {
-            pc: 0,
-            ir: None,
-            method_area,
-            constant_pool,
-            local_variables: vec![vec![]],
-            stack: vec![vec![]],
-            error: false
-        };
+impl IJVM {
+    pub fn new(/*method_area: MethodArea, constant_pool: &[i32]*/exec: File) -> Result<IJVM, &'static str> {
+        let mut parser = Parser::new(exec);
+        return if let Ok(parser) = parser {
+            let (cp, reader) = parser.parse();
+            let cp: Rc<Vec<i32>> = Rc::new(cp);
+            let ma = MethodArea::new(reader);
+            Ok(IJVM {
+                pc: 0,
+                ir: None,
+                method_area: ma,
+                constant_pool: Rc::clone(&cp),
+                local_variables: vec![vec![]],
+                stack: vec![vec![]],
+                error: false
+            })
+        } else {
+            Err(parser.err().as_ref().unwrap())
+        }
+        // return IJVM {
+        //     pc: 0,
+        //     ir: None,
+        //     method_area,
+        //     constant_pool,
+        //     local_variables: vec![vec![]],
+        //     stack: vec![vec![]],
+        //     error: false
+        // };
     }
 
     fn fetch_decode(&mut self) {

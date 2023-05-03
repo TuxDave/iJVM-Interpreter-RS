@@ -1,7 +1,8 @@
+use std::rc::Rc;
 use crate::ijvm::IJVM;
-use crate::parser::Istruction;
+use crate::ijvm::parser::Istruction;
 
-impl<'a> IJVM<'a> {
+impl IJVM {
     fn get_last_stack(&mut self) -> &mut Vec<i32> {
         return if self.stack.len() > 0 {
             self.stack.last_mut().unwrap()
@@ -226,7 +227,7 @@ impl<'a> IJVM<'a> {
                 if index > self.constant_pool.len() as u16 {
                     error("LDC_W: Constant index out of bound.");
                 } else {
-                    let &cp = &self.constant_pool;
+                    let cp = Rc::clone(&self.constant_pool);
                     self.get_last_stack().push(cp[index as usize]);
                 }
             }
