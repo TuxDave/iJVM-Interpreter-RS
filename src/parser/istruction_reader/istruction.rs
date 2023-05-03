@@ -32,6 +32,7 @@ pub enum Istruction {
 }
 
 impl Istruction {
+    //todo: do IN and OUT
     pub const BIPUSH: u8 = 0x10;
     pub const DUP: u8 = 0x59;
     pub const GOTO: u8 = 0xA7;
