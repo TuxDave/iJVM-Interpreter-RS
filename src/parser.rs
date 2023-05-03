@@ -7,6 +7,7 @@ pub use istruction_reader::ParamType;
 
 mod istruction_reader;
 
+#[allow(dead_code)]
 const MAGIC: [u8; 4] = [0x1D, 0xEA, 0xDF, 0xAD];
 
 pub struct Parser {
@@ -51,7 +52,7 @@ impl Parser {
         if self.constants.is_none() {
             let const_count_buf = &mut [0; 4];
             self.exec.read(const_count_buf).expect("Errore in lettura al byte 9-12");
-            let const_count = i32::from_be_bytes(*const_count_buf);
+            let const_count = i32::from_be_bytes(*const_count_buf) / 4;
             let mut consts: Vec<i32> = vec![];
             let mut red_byte = 13;
             for _ in 0..const_count {

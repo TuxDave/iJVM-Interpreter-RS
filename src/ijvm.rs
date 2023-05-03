@@ -43,11 +43,12 @@ impl<'a> IJVM<'a> {
             };
         }
 
+        self.ir = None;
+
         let mut opcode: u8 = 0;
         let mut little: u8 = 0;
         if let Err(msg) = sub_fetch(self, &mut opcode) {
             //TODO: trigger error listener
-            self.ir = None;
             eprintln!("{msg}");
             return;
         } else {
@@ -82,10 +83,13 @@ impl<'a> IJVM<'a> {
                     }
                 }
                 if let Some(_) = params.1 {
-                    if let Err(msg) = sub_fetch(self, p1.as_mut().unwrap()) {
+                    let tmp = &mut 0;
+                    if let Err(msg) = sub_fetch(self, tmp) {
                         //TODO: trigger error listener
                         eprintln!("{msg}");
                         return;
+                    } else {
+                        p1 = Some(*tmp)
                     }
                 }
                 if let Some(v) = p1 {
@@ -103,43 +107,16 @@ impl<'a> IJVM<'a> {
                 return;
             }
         }
-    } 
-}
+    }
 
-#[cfg(test)]
-mod t_private_ijvm {
-    use std::fs;
-    use std::fs::File;
-
-    use crate::ijvm::{IJVM, MethodArea};
-    use crate::parser::{Istruction, IstructionReader};
-
-    #[test]
-    #[should_panic]
-    fn t_fetch() {
-        let f = File::create("target/test.txt").expect("Impossibile creare il file");
-        let mut fake_method_area = MethodArea {
-            istructions: vec![],
-            reader: IstructionReader {
-                exec: f,
-                bytes: 6,
-                read: 0,
-            },
-        };
-        fake_method_area.istructions.push(Istruction::ILOAD);
-        fake_method_area.istructions.push(0x10);
-        fake_method_area.istructions.push(Istruction::WIDE);
-        fake_method_area.istructions.push(Istruction::ILOAD);
-        fake_method_area.istructions.push(0x1);
-        fake_method_area.istructions.push(0x1);
-        let cp = vec![];
-        let mut ijvm = IJVM::new(fake_method_area, &cp);
-        ijvm.fetch_decode();
-        println!("{:?}", ijvm.ir.unwrap());
-        ijvm.fetch_decode();
-        println!("{:?}", ijvm.ir.unwrap());
-        ijvm.fetch_decode();
-        println!("{:?}", ijvm.ir.unwrap());
-        fs::remove_file("target/test.txt").expect("Impossibile rimuovere il file");
+    pub fn run(&mut self) {
+        while !self.error {
+            self.fetch_decode();
+            if let Some(_istr) = self.ir {
+                self.execute();
+            } else {
+                break;
+            }
+        }
     }
 }

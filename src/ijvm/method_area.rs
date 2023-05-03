@@ -1,4 +1,3 @@
-use crate::ijvm::IJVM;
 use crate::parser::IstructionReader;
 
 pub struct MethodArea {
@@ -15,13 +14,13 @@ impl MethodArea {
     }
 
     pub fn fetch_absolute(&mut self, pc: usize) -> Result<u8, String> {
-        return if pc <= self.reader.len() {
+        return if pc <= self.reader.len() - 1 {
             let istr = self.istructions.get(pc);
             if let Some(istr) = istr {
                 Ok(*istr)
             } else {
-                let to_read = pc - self.istructions.len();
-                if to_read == 0 {
+                let to_read = (pc as isize - (self.istructions.len() as isize - 1)) as usize;
+                if to_read == 0 && pc != 0 {
                     return Err(format!("L'istruzione richiesta ({pc}) è out of bound ({})... \
                             (file compilato termimato)", self.reader.len()));
                 }
@@ -37,7 +36,7 @@ impl MethodArea {
                 self.fetch_absolute(pc)
             }
         } else {
-            Err(format!("L'istruzione richiesta ({pc}) è out of bound ({})...", self.reader.len()))
+            Err(format!("L'istruzione richiesta ({pc}) è out of bound ({})... file compilato terminato", self.reader.len()))
         };
     }
 

@@ -1,6 +1,3 @@
-
-
-
 use crate::ijvm::IJVM;
 use crate::parser::Istruction;
 
@@ -20,7 +17,7 @@ impl<'a> IJVM<'a> {
         if let Some(value) = value {
             return *value;
         } else {
-            while last.len() != varnum as usize {
+            while last.len() as isize - 1 != varnum as isize {
                 last.push(0);
             }
             return self.wide_get_var_value(varnum);
@@ -37,7 +34,7 @@ impl<'a> IJVM<'a> {
         if let Some(value) = value {
             *value = new_value;
         } else {
-            while last.len() != varnum as usize {
+            while last.len() as isize - 1 != varnum as isize {
                 last.push(0);
             }
             self.wide_store_var_value(varnum, new_value);
@@ -58,7 +55,7 @@ impl<'a> IJVM<'a> {
         }
     }
 
-    fn execute(&mut self) {
+    pub(super) fn execute(&mut self) {
         let istr = if let Some(istr) = self.ir {
             self.ir = None;
             istr
@@ -266,7 +263,7 @@ impl<'a> IJVM<'a> {
                 self.get_last_stack().push(val);
             }
             Istruction::Halt => {
-                self.error = true; //terminate
+                is_error = true; //terminate
             }
         }
         self.error = is_error;

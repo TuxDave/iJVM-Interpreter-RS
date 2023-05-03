@@ -79,6 +79,7 @@ impl Istruction {
             Istruction::LDC_W => Ldc_W(u16::from_be_bytes([params[0], params[1]])),
             Istruction::NOP => Nop,
             Istruction::POP => Pop,
+            Istruction::HALT => Halt,
             _ => Nop
         };
     }
