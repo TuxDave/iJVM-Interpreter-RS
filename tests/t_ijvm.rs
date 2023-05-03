@@ -11,4 +11,12 @@ mod t_ijvm{
         let mut ijvm = IJVM::new(MethodArea::new(reader), &cp);
         ijvm.run();
     }
+
+    #[test]
+    fn t_run2() {
+        let p = Parser::new(File::open("resources/esempioGOTO.ijvm").unwrap()).unwrap();
+        let (cp, reader) = p.parse();
+        let mut ijvm = IJVM::new(MethodArea::new(reader), &cp);
+        ijvm.run();
+    }
 }
