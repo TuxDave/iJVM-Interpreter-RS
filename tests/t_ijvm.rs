@@ -23,4 +23,18 @@ mod t_ijvm{
             res = ijvm.step_run();
         }
     }
+
+    #[test]
+    fn t_step2() {
+        let mut ijvm = IJVM::new(File::open("resources/esempioGOTO.ijvm").expect("ERRORE PARSE")).expect("ERRORE");
+        let mut res = ijvm.step_run();
+        while res.is_some() {
+            res = ijvm.step_run();
+        }
+        let stack1 = ijvm.get_stack_clone();
+        let mut ijvm = IJVM::new(File::open("resources/esempioGOTO.ijvm").expect("ERRORE PARSE")).expect("ERRORE");
+        ijvm.auto_run();
+        let stack2 = ijvm.get_stack_clone();
+        assert_eq!(stack2, stack1);
+    }
 }

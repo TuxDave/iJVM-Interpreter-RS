@@ -55,6 +55,10 @@ impl IJVM {
         return self.pc;
     }
 
+    pub fn get_stack_clone(&self) -> Vec<Vec<i32>>{
+        return self.stack.clone();
+    }
+
     fn fetch_decode(&mut self) {
         fn sub_fetch(this: &mut IJVM, put: &mut u8) -> Result<(), String> {
             let fetched = this.method_area.fetch_absolute(this.pc);
