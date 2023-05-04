@@ -31,10 +31,10 @@ mod t_ijvm{
         while res.is_some() {
             res = ijvm.step_run();
         }
-        let stack1 = ijvm.get_stack_clone();
+        let stack1 = ijvm.get_stack();
         let mut ijvm = IJVM::new(File::open("resources/esempioGOTO.ijvm").expect("ERRORE PARSE")).expect("ERRORE");
         ijvm.auto_run();
-        let stack2 = ijvm.get_stack_clone();
+        let stack2 = ijvm.get_stack();
         assert_eq!(stack2, stack1);
     }
 }

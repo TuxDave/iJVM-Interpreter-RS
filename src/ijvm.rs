@@ -55,8 +55,16 @@ impl IJVM {
         return self.pc;
     }
 
-    pub fn get_stack_clone(&self) -> Vec<Vec<i32>>{
+    pub fn get_stack(&self) -> Vec<Vec<i32>>{
         return self.stack.clone();
+    }
+
+    pub fn get_constant_pool(&self) -> Rc<Vec<i32>> {
+        return Rc::clone(&self.constant_pool);
+    }
+
+    pub fn get_local_variables(&self) -> Vec<Vec<i32>>{
+        return self.local_variables.clone();
     }
 
     fn fetch_decode(&mut self) {
@@ -137,14 +145,15 @@ impl IJVM {
         }
     }
 
-    pub fn step_run(&mut self) -> Option<()> {
+    ///## return: (stack, constant_pool, local_variables)'s copy
+    pub fn step_run(&mut self) -> Option<(Vec<Vec<i32>>, Rc<Vec<i32>>, Vec<Vec<i32>>)> {
         if self.ir.is_none() {
             self.fetch_decode();
         }
         if let Some(_istr) = self.ir {
             self.execute();
             self.fetch_decode();
-            return Some(());
+            return Some((self.get_stack(), self.get_constant_pool(), self.get_local_variables()));
         } else {
             return None
         }
