@@ -51,6 +51,10 @@ impl IJVM {
         // };
     }
 
+    pub fn get_pc(&self) -> usize {
+        return self.pc;
+    }
+
     fn fetch_decode(&mut self) {
         fn sub_fetch(this: &mut IJVM, put: &mut u8) -> Result<(), String> {
             let fetched = this.method_area.fetch_absolute(this.pc);
@@ -129,7 +133,20 @@ impl IJVM {
         }
     }
 
-    pub fn run(&mut self) {
+    pub fn step_run(&mut self) -> Option<()> {
+        if self.ir.is_none() {
+            self.fetch_decode();
+        }
+        if let Some(_istr) = self.ir {
+            self.execute();
+            self.fetch_decode();
+            return Some(());
+        } else {
+            return None
+        }
+    }
+
+    pub fn auto_run(&mut self) {
         while !self.error {
             self.fetch_decode();
             if let Some(_istr) = self.ir {
