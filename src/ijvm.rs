@@ -18,7 +18,7 @@ pub struct IJVM {
     constant_pool: Rc<Vec<i32>>,
     local_variables: Vec<Vec<i32>>,
     stack: Vec<Vec<i32>>,
-    error: bool
+    pub error: bool
 }
 
 impl IJVM {
@@ -145,12 +145,13 @@ impl IJVM {
         }
     }
 
-    pub fn get_memory_state(&self) -> (Vec<Vec<i32>>, Rc<Vec<i32>>, Vec<Vec<i32>>) {
-        return (self.get_stack(), self.get_constant_pool(), self.get_local_variables());
+    ///## return: (stack, constant_pool, local_variables, istruction_register, program_counter)'s copy
+    pub fn get_memory_state(&self) -> (Vec<Vec<i32>>, Rc<Vec<i32>>, Vec<Vec<i32>>, Option<Istruction>, usize) {
+        return (self.get_stack(), self.get_constant_pool(), self.get_local_variables(), self.ir.clone(), self.get_pc());
     }
 
-    ///## return: (stack, constant_pool, local_variables)'s copy
-    pub fn step_run(&mut self) -> Option<(Vec<Vec<i32>>, Rc<Vec<i32>>, Vec<Vec<i32>>)> {
+    ///## return: (stack, constant_pool, local_variables, istruction_register, program_counter)'s copy
+    pub fn step_run(&mut self) -> Option<(Vec<Vec<i32>>, Rc<Vec<i32>>, Vec<Vec<i32>>, Option<Istruction>, usize)> {
         if self.ir.is_none() {
             self.fetch_decode();
         }
