@@ -151,14 +151,14 @@ impl IJVM {
     }
 
     ///## return: (stack, constant_pool, local_variables, istruction_register, program_counter)'s copy
-    pub fn step_run(&mut self) -> Option<(Vec<Vec<i32>>, Rc<Vec<i32>>, Vec<Vec<i32>>, Option<Istruction>, usize)> {
+    pub fn step_run(&mut self) -> Option<()> {
         if self.ir.is_none() {
             self.fetch_decode();
         }
         if let Some(_istr) = self.ir {
             self.execute();
             self.fetch_decode();
-            return Some(self.get_memory_state());
+            return Some(());
         } else {
             return None
         }
