@@ -1,4 +1,5 @@
-./ijvm_cpp_wrapper/target/
-./ijvm_interpreter_rs/target/
-./ijvm_cpp_wrapper/Cargo.lock
-./ijvm_interpreter_rs/Cargo.lock
+/**/target/
+/ijvm_cpp_wrapper/Cargo.lock
+/ijvm_interpreter_rs/Cargo.lock
+/ijvm_cpp_wrapper/target/debug/.cargo-lock
+/ijvm_interpreter_rs/target/debug/.cargo-lock
