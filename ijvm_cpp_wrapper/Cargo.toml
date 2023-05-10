@@ -11,3 +11,6 @@ crate-type = ["staticlib"]
 [dependencies]
 ijvm_interpreter_rs = {path = "../ijvm_interpreter_rs"}
 safer-ffi = "0.0.10"
+
+[features]
+c-headers = ["safer-ffi/headers"]

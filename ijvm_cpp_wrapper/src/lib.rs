@@ -1,40 +1,41 @@
-use std::fmt::Debug;
 use safer_ffi::vec::{Vec as VecC};
-use safer_ffi::string::String as StringC;
+use std::ffi::{c_char, CString};
 
 #[repr(C)]
 #[allow(non_camel_case_types)]
-pub struct IJVM_MemoryState {
+pub struct IJVM_MemoryState<'a> {
     pub pc: usize,
     pub stack: VecC<VecC<i32>>,
     pub constant_pool: VecC<i32>,
     pub local_variables: VecC<VecC<i32>>,
-    pub istruction_register: StringC,
+    pub istruction_register: *mut c_char,
 }
 impl IJVM_MemoryState {
     pub fn from(
         from: (Vec<Vec<i32>>,Rc<Vec<i32>>,Vec<Vec<i32>>,Option<Istruction>,usize)
     ) -> IJVM_MemoryState {
         let (
-            mut old_stack,
-            mut old_constant_pool,
-            mut old_local_variables,
-            mut old_istruction_register,
-            mut pc
+            old_stack,
+            old_constant_pool,
+            old_local_variables,
+            old_istruction_register,
+            pc
         ) = from;
 
-        return IJVM_MemoryState {
-            stack: VecC::from(old_stack.iter().map( |el: &Vec<i32>| {
-                let el = el.clone();
-                VecC::from(el)
-            }).collect::<Vec<VecC<i32>>>()),
-            constant_pool: VecC::from((*old_constant_pool).clone()),
-            local_variables: VecC::from(old_local_variables.iter().map( |el: &Vec<i32>| {
-                let el = el.clone();
-                VecC::from(el)
-            }).collect::<Vec<VecC<i32>>>()),
-            istruction_register: StringC::from(format!("{}", old_istruction_register.unwrap_or_else(|| Nop))),
-            pc
+        unsafe {
+            return IJVM_MemoryState {
+                stack: VecC::from(old_stack.iter().map(|el: &Vec<i32>| {
+                    let el = el.clone();
+                    VecC::from(el)
+                }).collect::<Vec<VecC<i32>>>()),
+                constant_pool: VecC::from((*old_constant_pool).clone()),
+                local_variables: VecC::from(old_local_variables.iter().map(|el: &Vec<i32>| {
+                    let el = el.clone();
+                    VecC::from(el)
+                }).collect::<Vec<VecC<i32>>>()),
+                istruction_register: old_istruction_register, //TODO CONVERT ALL TO C_Compatible
+                pc
+            }
         }
     }
 
@@ -59,9 +60,8 @@ use ijvm_interpreter_rs::ijvm::Istruction::Nop;
 static mut ijvm: Option<IJVM> = None;
 
 #[no_mangle]
-pub extern "C" fn ijvm_new(path: StringC) -> bool {
-    let string = path;
-    let f = File::open(string.to_string());
+pub extern "C" fn ijvm_new(path: CString) -> bool {
+    let f = File::open(path.to_str().unwrap());
     let l_ijvm;
     if let Ok(file) = f {
         l_ijvm = IJVM::new(file);
@@ -113,11 +113,13 @@ pub extern "C" fn auto_run() -> bool {
 mod tests {
     use crate::{get_ijvm_memory_state, ijvm_new, step_run};
     use safer_ffi::vec::{Vec as VecC};
-    use safer_ffi::string::String as StringC;
+    use std::ffi::CString as StringC;
 
     #[test]
     fn t_dont_panic() {
-        let result = ijvm_new(StringC::from("../ijvm_interpreter_rs/resources/esempioGOTO.ijvm".to_string()));
+        let result = ijvm_new(unsafe {
+            StringC::from_vec_unchecked("../ijvm_interpreter_rs/resources/esempioGOTO.ijvm".to_string().into_bytes())
+        });
         assert_eq!(true, result);
         let mut state = get_ijvm_memory_state();
         assert_eq!(state.pc, 0);
