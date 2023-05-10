@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::ijvm::parser::Istruction::{*};
 
 #[derive(PartialEq, Copy, Clone, Debug)]
@@ -134,5 +135,11 @@ impl ParamType {
     pub fn from_opcode(opcode: u8) -> (ParamType, Option<ParamType>) {
         let opcode = u16::from_be_bytes([0, opcode]);
         return Self::from_opcode_wide(opcode);
+    }
+}
+
+impl Display for Istruction {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
     }
 }

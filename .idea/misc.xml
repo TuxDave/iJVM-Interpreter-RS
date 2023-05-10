@@ -3,4 +3,9 @@
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$/ijvm_step_viewer">
     <contentRoot DIR="$PROJECT_DIR$" />
   </component>
+  <component name="CidrRootsConfiguration">
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/ijvm_interpreter_rs/target" />
+    </excludeRoots>
+  </component>
 </project>

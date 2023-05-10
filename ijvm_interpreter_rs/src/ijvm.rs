@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::rc::Rc;
 use method_area::MethodArea;
-use parser::{Istruction, ParamType};
+pub use parser::{Istruction, ParamType};
 use crate::ijvm::parser::Parser;
 
 mod method_area;
@@ -9,7 +9,6 @@ mod execute_istr;
 mod parser;
 
 #[allow(non_camel_case_types)]
-#[repr(C)]
 pub struct IJVM {
     pc: usize,
     // program counter
@@ -23,9 +22,9 @@ pub struct IJVM {
 }
 
 impl IJVM {
-    #[no_mangle]
-    pub extern "C" fn new(/*method_area: MethodArea, constant_pool: &[i32]*/exec: File) -> Result<IJVM, &'static str> {
-        let mut parser = Parser::new(exec);
+
+    pub fn new( exec: File) -> Result<IJVM, &'static str> {
+        let parser = Parser::new(exec);
         return if let Ok(parser) = parser {
             let (cp, reader) = parser.parse();
             let cp: Rc<Vec<i32>> = Rc::new(cp);
@@ -148,28 +147,24 @@ impl IJVM {
     }
 
     ///## return: (stack, constant_pool, local_variables, istruction_register, program_counter)'s copy
-    #[no_mangle]
-    pub extern "C" fn get_memory_state(&self) -> (Vec<Vec<i32>>, Rc<Vec<i32>>, Vec<Vec<i32>>, Option<Istruction>, usize) {
+    pub fn get_memory_state(&self) -> (Vec<Vec<i32>>, Rc<Vec<i32>>, Vec<Vec<i32>>, Option<Istruction>, usize) {
         return (self.get_stack(), self.get_constant_pool(), self.get_local_variables(), self.ir.clone(), self.get_pc());
     }
 
-    ///## return: (stack, constant_pool, local_variables, istruction_register, program_counter)'s copy
-    #[no_mangle]
-    pub extern "C" fn step_run(&mut self) -> Option<()> {
+    pub fn step_run(&mut self) -> Option<()> {
         if self.ir.is_none() {
             self.fetch_decode();
         }
-        if let Some(_istr) = self.ir {
+        return if let Some(_istr) = self.ir {
             self.execute();
             self.fetch_decode();
-            return Some(());
+            Some(())
         } else {
-            return None
+            None
         }
     }
 
-    #[no_mangle]
-    pub extern "C" fn auto_run(&mut self) {
+    pub fn auto_run(&mut self) {
         while !self.error {
             self.fetch_decode();
             if let Some(_istr) = self.ir {
