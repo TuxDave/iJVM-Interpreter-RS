@@ -5,6 +5,7 @@
   </component>
   <component name="CidrRootsConfiguration">
     <excludeRoots>
+      <file path="$PROJECT_DIR$/ijvm_cpp_wrapper/target" />
       <file path="$PROJECT_DIR$/ijvm_interpreter_rs/target" />
     </excludeRoots>
   </component>
