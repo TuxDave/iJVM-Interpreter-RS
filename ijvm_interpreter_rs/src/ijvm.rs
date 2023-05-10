@@ -9,6 +9,7 @@ mod execute_istr;
 mod parser;
 
 #[allow(non_camel_case_types)]
+#[repr(C)]
 pub struct IJVM {
     pc: usize,
     // program counter
@@ -22,7 +23,8 @@ pub struct IJVM {
 }
 
 impl IJVM {
-    pub fn new(/*method_area: MethodArea, constant_pool: &[i32]*/exec: File) -> Result<IJVM, &'static str> {
+    #[no_mangle]
+    pub extern "C" fn new(/*method_area: MethodArea, constant_pool: &[i32]*/exec: File) -> Result<IJVM, &'static str> {
         let mut parser = Parser::new(exec);
         return if let Ok(parser) = parser {
             let (cp, reader) = parser.parse();
@@ -146,12 +148,14 @@ impl IJVM {
     }
 
     ///## return: (stack, constant_pool, local_variables, istruction_register, program_counter)'s copy
-    pub fn get_memory_state(&self) -> (Vec<Vec<i32>>, Rc<Vec<i32>>, Vec<Vec<i32>>, Option<Istruction>, usize) {
+    #[no_mangle]
+    pub extern "C" fn get_memory_state(&self) -> (Vec<Vec<i32>>, Rc<Vec<i32>>, Vec<Vec<i32>>, Option<Istruction>, usize) {
         return (self.get_stack(), self.get_constant_pool(), self.get_local_variables(), self.ir.clone(), self.get_pc());
     }
 
     ///## return: (stack, constant_pool, local_variables, istruction_register, program_counter)'s copy
-    pub fn step_run(&mut self) -> Option<()> {
+    #[no_mangle]
+    pub extern "C" fn step_run(&mut self) -> Option<()> {
         if self.ir.is_none() {
             self.fetch_decode();
         }
@@ -164,7 +168,8 @@ impl IJVM {
         }
     }
 
-    pub fn auto_run(&mut self) {
+    #[no_mangle]
+    pub extern "C" fn auto_run(&mut self) {
         while !self.error {
             self.fetch_decode();
             if let Some(_istr) = self.ir {
