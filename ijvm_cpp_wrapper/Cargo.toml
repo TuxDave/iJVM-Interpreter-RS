@@ -1,0 +1,13 @@
+[package]
+name = "ijvm_cpp_wrapper"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ijvm_interpreter_rs = {path = "../ijvm_interpreter_rs"}
+safer-ffi = "0.0.10"
