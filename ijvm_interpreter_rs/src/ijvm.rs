@@ -56,16 +56,20 @@ impl IJVM {
         return self.pc;
     }
 
-    fn get_stack(&self) -> Vec<Vec<i32>>{
+    pub fn get_stack(&self) -> Vec<Vec<i32>>{
         return self.stack.clone();
     }
 
-    fn get_constant_pool(&self) -> Rc<Vec<i32>> {
+    pub fn get_constant_pool(&self) -> Rc<Vec<i32>> {
         return Rc::clone(&self.constant_pool);
     }
 
-    fn get_local_variables(&self) -> Vec<Vec<i32>>{
+    pub fn get_local_variables(&self) -> Vec<Vec<i32>>{
         return self.local_variables.clone();
+    }
+    
+    pub fn get_method_area(&self) -> Vec<u8> {
+        return self.method_area.istructions.clone()
     }
 
     fn fetch_decode(&mut self) {
