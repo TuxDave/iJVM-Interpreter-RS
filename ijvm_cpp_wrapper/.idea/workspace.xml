@@ -13,16 +13,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7c4ac1be-2d39-47ed-8167-3439112e5dd0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/qmlSettings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/qmlSettings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ijvm_interpreter_rs/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../ijvm_interpreter_rs/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ijvm_step_viewer/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ijvm_step_viewer/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ijvm_step_viewer/ijvm_step_viewer_it_IT.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ijvm_step_viewer/layout/mainwindow.ui" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ijvm_step_viewer/src/main.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ijvm_step_viewer/src/mainwindow.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ijvm_step_viewer/src/mainwindow.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,14 +36,16 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "WebServerToolWindowFactoryState": "false",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "git-widget-placeholder": "static__library__addon",
-    "last_opened_file_path": "/home/tuxdave/Documenti/MyProjects/ijvm_interpreter_rs/ijvm_cpp_wrapper",
+    "last_opened_file_path": "/home/tuxdave/Documenti/MyProjects/iJVM-Interpreter-RS/ijvm_cpp_wrapper",
     "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
+    "settings.editor.selected.configurable": "language.rust",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -82,7 +75,9 @@
     </recent_temporary>
   </component>
   <component name="RustProjectSettings">
-    <option name="toolchainHomeDirectory" value="/usr/bin" />
+    <option name="runExternalLinterOnTheFly" value="true" />
+    <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
+    <option name="version" value="2" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -93,10 +88,15 @@
       <option name="presentableId" value="Default" />
       <updated>1683828481185</updated>
       <workItem from="1683828482218" duration="64000" />
+      <workItem from="1683874428499" duration="216000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
