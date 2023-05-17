@@ -1,3 +1,4 @@
+/**/build/
 /**/.directory
 /**/target/
 /ijvm_cpp_wrapper/Cargo.lock
